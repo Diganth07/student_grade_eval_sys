@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 College Grade Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           GLOBAL RESET & DARK THEME
+        ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-primary: #0b0e17;
+            --bg-secondary: #131a2b;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f4ff;
+            --text-secondary: #94a3b8;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-3: #a78bfa;
+            --gradient-main: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+            --shadow-glow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: radial-gradient(ellipse at 10% 20%, rgba(99,102,241,0.08) 0%, transparent 60%),
+                              radial-gradient(ellipse at 90% 80%, rgba(139,92,246,0.08) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+        /* subtle animated gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(99,102,241,0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================
+           GLASSMORPHISM BASE
+        ============================================ */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+        .header {
+            padding: 28px 36px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: rgba(11, 14, 23, 0.6);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        .header-left .icon {
+            font-size: 30px;
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-main);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        .header-left .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            -webkit-text-fill-color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: var(--gradient-main);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+        }
+        .btn-outline {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* ============================================
+           STATS CARDS
+        ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            padding: 24px 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-main);
+            opacity: 0;
+            transition: opacity 0.4s;
+            border-radius: var(--radius);
+            z-index: -1;
+        }
+        .stat-card:hover::before {
+            opacity: 0.08;
+        }
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(99,102,241,0.3);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .stat-card .stat-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: inline-block;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card .stat-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        .stat-card .stat-value {
+            font-size: 34px;
+            font-weight: 900;
+            margin-top: 4px;
+            letter-spacing: -0.5px;
+        }
+        .stat-card .stat-value .small {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           SUBJECT BARS
+        ============================================ */
+        .subject-bar-section {
+            padding: 24px 28px;
+            margin-bottom: 32px;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .subject-bar-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .subject-bar-section .section-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subject-bar-section .section-header h3 i {
+            color: var(--accent-1);
+        }
+        .subject-bars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .subject-bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .subject-bar-item .subject-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+        .subject-bar-item .bar-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .subject-bar-item .bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: var(--gradient-main);
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(99,102,241,0.3);
+        }
+
+        /* ============================================
+           TABLE
+        ============================================ */
+        .table-section {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .table-section .table-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-section .table-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-section .table-header h3 i {
+            color: var(--accent-1);
+        }
+        .table-section .table-header .badge-count {
+            background: rgba(255,255,255,0.06);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 4px 4px 4px;
+        }
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-wrapper thead {
+            background: rgba(255,255,255,0.03);
+        }
+        .table-wrapper thead th {
+            padding: 16px 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .table-wrapper tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.2s;
+        }
+        .table-wrapper tbody tr:hover {
+            background: rgba(255,255,255,0.04);
+        }
+        .table-wrapper tbody td {
+            padding: 16px 18px;
+            vertical-align: middle;
+        }
+        .student-name {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .student-name i {
+            color: var(--accent-1);
+        }
+        .sgpa-cell {
+            font-weight: 800;
+            font-size: 18px;
+        }
+        .sgpa-cell.high { color: #34d399; }
+        .sgpa-cell.mid { color: #fbbf24; }
+        .sgpa-cell.low { color: #f87171; }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+        .grade-Aplus, .grade-A { background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+        .grade-Bplus, .grade-B { background: rgba(96,165,250,0.2); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+        .grade-C { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+        .grade-D { background: rgba(251,146,60,0.2); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+        .grade-F { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-Excellent { background: rgba(52,211,153,0.15); color: #34d399; }
+        .status-VeryGood { background: rgba(96,165,250,0.15); color: #60a5fa; }
+        .status-Good { background: rgba(167,139,250,0.15); color: #a78bfa; }
+        .status-Satisfactory { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .status-Average { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .status-BelowAverage { background: rgba(251,146,60,0.15); color: #fb923c; }
+        .status-NeedsImprovement { background: rgba(248,113,113,0.15); color: #f87171; }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        .action-btn.edit:hover { background: rgba(99,102,241,0.2); color: var(--accent-1); }
+        .action-btn.delete:hover { background: rgba(248,113,113,0.2); color: #f87171; }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .expand-btn:hover { color: var(--accent-1); }
+        .expand-btn.active { color: var(--accent-1); transform: rotate(180deg); }
+
+        .subject-scores-row {
+            display: none;
+            background: rgba(255,255,255,0.02);
+        }
+        .subject-scores-row.show { display: table-row; }
+        .subject-scores-row td {
+            padding: 16px 18px !important;
+            background: rgba(0,0,0,0.2);
+        }
+        .subject-scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .subject-scores-grid .subj-item {
+            background: rgba(255,255,255,0.04);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .subject-scores-grid .subj-item .subj-name { color: var(--text-secondary); }
+        .subject-scores-grid .subj-item .subj-score { font-weight: 700; }
+
+        /* ============================================
+           MODAL – GLASS
+        ============================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(16px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: rgba(20, 30, 50, 0.85);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            max-width: 760px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal::-webkit-scrollbar { width: 6px; }
+        .modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal .modal-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .modal .modal-header h2 i { color: var(--accent-1); }
+        .modal .modal-header .close-btn {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal .modal-header .close-btn:hover { background: rgba(248,113,113,0.2); color: #f87171; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+        .form-group label i { margin-right: 6px; color: var(--accent-1); }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+        }
+        .form-group input::placeholder { color: var(--text-secondary); }
+
+        .subject-scores-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .subject-scores-form .form-group { margin-bottom: 0; }
+        .subject-scores-form .form-group input { padding: 10px 14px; font-size: 13px; }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .form-actions button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-actions .btn-submit {
+            background: var(--gradient-main);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+        .form-actions .btn-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+        }
+        .form-actions .btn-cancel {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .form-actions .btn-cancel:hover { background: rgba(255,255,255,0.1); }
+
+        /* ============================================
+           TOAST
+        ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 28px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            background: rgba(20, 30, 50, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #fff;
+            max-width: 420px;
+        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+        .toast.success { border-left: 4px solid #34d399; }
+        .toast.error { border-left: 4px solid #f87171; }
+        .toast i { font-size: 22px; }
+        .toast.success i { color: #34d399; }
+        .toast.error i { color: #f87171; }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .header { padding: 20px; flex-direction: column; align-items: flex-start; }
+            .header-left h1 { font-size: 22px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .stat-card { padding: 18px 20px; }
+            .stat-card .stat-value { font-size: 26px; }
+            .modal { padding: 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            .subject-scores-form { grid-template-columns: 1fr 1fr; }
+            .subject-bars { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .subject-scores-form { grid-template-columns: 1fr; }
+            .subject-bars { grid-template-columns: 1fr; }
+            .header-actions { width: 100%; }
+            .header-actions .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+            <div>
+                <h1>Student <span style="-webkit-text-fill-color:white;background:none;">Evaluation-System</span></h1>
+               
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fas fa-plus-circle"></i> Add Student
+            </button>
+            <button class="btn btn-outline" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card glass">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value" id="totalStudents">{{ total_students }}</div>
+        </div>
+        <div class="stat-card glass">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-label">Average SGPA</div>
+            <div class="stat-value" id="avgSGPA">{{ avg_sgpa }}</div>
+        </div>
+        <div class="stat-card glass">
+            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+            <div class="stat-label">Top Performer</div>
+            <div class="stat-value" style="font-size:22px;" id="topPerformer">
+                {% if top_student %}{{ top_student.name }}{% else %}N/A{% endif %}
+            </div>
+        </div>
+        <div class="stat-card glass">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-label">Needs Improvement</div>
+            <div class="stat-value" id="needsImprovement">{{ needs_improvement }}</div>
+        </div>
+    </div>
+
+    <!-- SUBJECT AVERAGES -->
+    <div class="subject-bar-section glass">
+        <div class="section-header">
+            <h3><i class="fas fa-chart-bar"></i> Subject-wise Class Average</h3>
+        </div>
+        <div class="subject-bars" id="subjectBars">
+            {% for subj, avg in subject_avg.items() %}
+            <div class="subject-bar-item">
+                <div class="subject-name">
+                    <span>{{ subj }}</span>
+                    <span>{{ avg }}%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ avg }}%;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-section glass">
+        <div class="table-header">
+            <h3><i class="fas fa-table"></i> Student Performance</h3>
+            <span class="badge-count">{{ students|length }} records</span>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:30px;"></th>
+                        <th>Roll No</th>
+                        <th>Student Name</th>
+                        <th>SGPA</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    {% for student in students|sort(attribute='sgpa', reverse=True) %}
+                    <tr id="row-{{ student.id }}">
+                        <td>
+                            <button class="expand-btn" onclick="toggleScores({{ student.id }})" id="expandBtn-{{ student.id }}">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </td>
+                        <td><span style="color:var(--text-secondary);">{{ student.roll_no }}</span></td>
+                        <td class="student-name"><i class="fas fa-user-circle"></i> {{ student.name }}</td>
+                        <td class="sgpa-cell 
+                            {% if student.sgpa >= 7 %}high
+                            {% elif student.sgpa >= 5 %}mid
+                            {% else %}low{% endif %}">
+                            {{ student.sgpa }}
+                        </td>
+                        <td><span class="grade-badge grade-{{ student.grade|replace('+', 'plus') }}">{{ student.grade }}</span></td>
+                        <td><span class="status-badge status-{{ student.status|replace(' ', '') }}">{{ student.status }}</span></td>
+                        <td style="text-align:center;">
+                            <button class="action-btn edit" onclick="openEditModal({{ student.id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteStudent({{ student.id }})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="subject-scores-row" id="scores-{{ student.id }}">
+                        <td colspan="7">
+                            <div class="subject-scores-grid">
+                                {% for subj, data in student.subjects.items() %}
+                                <div class="subj-item">
+                                    <span class="subj-name">{{ subj }}</span>
+                                    <span class="subj-score" style="color:{% if data.marks >= 70 %}#34d399{% elif data.marks >= 50 %}#fbbf24{% else %}#f87171{% endif %};">
+                                        {{ data.marks }}%
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="studentModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-plus"></i> <span id="modalTitle">Add New Student</span></h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="studentForm" onsubmit="submitForm(event)">
+            <input type="hidden" id="editId" value="">
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="studentName" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> Roll Number</label>
+                    <input type="text" id="rollNo" placeholder="CS2024001" required>
+                </div>
+            </div>
+            <div class="form-group full">
+                <label><i class="fas fa-calendar"></i> Semester</label>
+                <input type="text" id="semester" placeholder="Fall 2024" required>
+            </div>
+            <div style="margin-top:6px;margin-bottom:12px;">
+                <label style="font-weight:600;font-size:13px;color:var(--text-secondary);">
+                    <i class="fas fa-book-open"></i> Subject Marks (out of 100)
+                </label>
+                <div class="subject-scores-form" id="subjectScoresForm">
+                    {% for subj in subjects %}
+                    <div class="form-group">
+                        <label style="font-size:11px;color:var(--text-secondary);font-weight:500;">{{ subj.name }} ({{ subj.credits }} cr)</label>
+                        <input type="number" id="marks_{{ subj.name }}" name="marks_{{ subj.name }}" placeholder="0-100" min="0" max="100" required>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit" id="submitBtn"><i class="fas fa-save"></i> Save Student</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Success!</span>
+</div>
+
+<script>
+    // ============================================
+    // TOAST
+    // ============================================
+    function showToast(message, type='success') {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+        toast.className = 'toast ' + type;
+        toastMsg.textContent = message;
+        const icon = toast.querySelector('i');
+        icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        toast.classList.add('show');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ============================================
+    // EXPAND
+    // ============================================
+    function toggleScores(id) {
+        const row = document.getElementById('scores-'+id);
+        const btn = document.getElementById('expandBtn-'+id);
+        row.classList.toggle('show');
+        btn.classList.toggle('active');
+    }
+
+    // ============================================
+    // MODAL
+    // ============================================
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add New Student';
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Save Student';
+        document.getElementById('editId').value = '';
+        document.getElementById('studentForm').reset();
+        document.getElementById('studentModal').classList.add('active');
+    }
+
+    function openEditModal(id) {
+        const row = document.getElementById('row-'+id);
+        const cells = row.querySelectorAll('td');
+        const rollNo = cells[1].textContent.trim();
+        const name = cells[2].textContent.trim();
+        
+        document.getElementById('modalTitle').textContent = 'Edit Student';
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-edit"></i> Update Student';
+        document.getElementById('editId').value = id;
+        document.getElementById('studentName').value = name;
+        document.getElementById('rollNo').value = rollNo;
+        document.getElementById('semester').value = 'Fall 2024'; // fallback
+
+        const scoresRow = document.getElementById('scores-'+id);
+        const items = scoresRow.querySelectorAll('.subj-item');
+        items.forEach(item => {
+            const subjName = item.querySelector('.subj-name').textContent.trim();
+            const score = item.querySelector('.subj-score').textContent.replace('%', '').trim();
+            const input = document.getElementById('marks_' + subjName);
+            if (input) input.value = score;
+        });
+        
+        document.getElementById('studentModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('studentModal').classList.remove('active');
+    }
+    document.getElementById('studentModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ============================================
+    // FORM SUBMIT
+    // ============================================
+    async function submitForm(e) {
+        e.preventDefault();
+        const editId = document.getElementById('editId').value;
+        const name = document.getElementById('studentName').value.trim();
+        const rollNo = document.getElementById('rollNo').value.trim();
+        const semester = document.getElementById('semester').value.trim();
+
+        if (!name || !rollNo || !semester) {
+            showToast('Please fill in all fields!', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('roll_no', rollNo);
+        formData.append('semester', semester);
+
+        const inputs = document.querySelectorAll('#subjectScoresForm input');
+        let allFilled = true;
+        inputs.forEach(input => {
+            if (!input.value.trim()) allFilled = false;
+            formData.append(input.name, input.value || 0);
+        });
+
+        if (!allFilled) {
+            showToast('Please fill in all subject marks!', 'error');
+            return;
+        }
+
+        const url = editId ? '/edit/' + editId : '/add';
+        const method = editId ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, { method: method, body: formData });
+            const data = await response.json();
+            if (data.success) {
+                showToast(editId ? 'Student updated!' : 'Student added!');
+                closeModal();
+                setTimeout(() => location.reload(), 500);
+            } else {
+                showToast('Something went wrong!', 'error');
+            }
+        } catch (error) {
+            showToast('Error: ' + error.message, 'error');
+        }
+    }
+
+    // ============================================
+    // DELETE
+    // ============================================
+    async function deleteStudent(id) {
+        if (!confirm('Delete this student?')) return;
+        try {
+            const response = await fetch('/delete/' + id, { method: 'DELETE' });
+            const data = await response.json();
+            if (data.success) {
+                showToast('Student deleted!');
+                const row = document.getElementById('row-'+id);
+                if (row) row.remove();
+                const scores = document.getElementById('scores-'+id);
+                if (scores) scores.remove();
+                refreshStats();
+            }
+        } catch (error) {
+            showToast('Error: ' + error.message, 'error');
+        }
+    }
+
+    // ============================================
+    // REFRESH STATS (AJAX)
+    // ============================================
+    async function refreshStats() {
+        try {
+            const response = await fetch('/stats');
+            const data = await response.json();
+            document.getElementById('totalStudents').textContent = data.total_students;
+            document.getElementById('avgSGPA').textContent = data.average_sgpa;
+            if (data.top_performers && data.top_performers.length > 0) {
+                document.getElementById('topPerformer').textContent = data.top_performers[0].name;
+            }
+            document.getElementById('needsImprovement').textContent = data.needs_improvement || 0;
+            
+            const container = document.getElementById('subjectBars');
+            container.innerHTML = '';
+            for (const [subj, avg] of Object.entries(data.subject_averages)) {
+                const div = document.createElement('div');
+                div.className = 'subject-bar-item';
+                div.innerHTML = `
+                    <div class="subject-name"><span>${subj}</span><span>${avg}%</span></div>
+                    <div class="bar-track"><div class="bar-fill" style="width:${avg}%;"></div></div>
+                `;
+                container.appendChild(div);
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // Animate bars on load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 200);
+        });
+    });
+</script>
+
+</body>
+</html>
